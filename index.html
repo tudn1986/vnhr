@@ -12,7 +12,7 @@
     .card { border: 1px solid #ddd; padding: 14px; border-radius: 6px; background: #fff; }
     .input-row { display:flex; gap:10px; margin-bottom:8px; align-items:center; }
     .input-row label { width: 320px; font-size: 14px; }
-    input[type=number], input[type=text] { flex:1; padding:6px 8px; }
+    input[type=number], input[type=text], input[type=month] { flex:1; padding:6px 8px; }
     button { padding: 8px 12px; margin-top: 8px; cursor: pointer; }
     .result-box { margin-top: 12px; padding: 10px; border-radius:6px; background:#f7f7f8; }
     details { margin-top:8px; }
@@ -27,11 +27,18 @@
     <div>
       <div class="card">
         <h2>A. Mức lương thỏa thuận theo HĐLĐ</h2>
+        <div class="input-row"><label for="payMonth">Tháng tính lương:</label><input id="payMonth" type="month"></div>
         <div class="input-row"><label for="baseSalary">Mức lương cơ bản (VND/Tháng):</label><input id="baseSalary" type="number" value="10000000" min="0"></div>
         <div class="input-row"><label for="allowanceSalary">Mức lương tính phụ cấp (VND/Tháng):</label><input id="allowanceSalary" type="number" value="10000000" min="0"></div>
+        <div class="input-row"><label for="monthlyAllowance">Mức phụ cấp (VND/Tháng):</label><input id="monthlyAllowance" type="number" value="0" min="0"></div>
         <div class="input-row"><label for="attendanceAllowanceBase">Mức phụ cấp chuyên cần (VND/Tháng):</label><input id="attendanceAllowanceBase" type="number" value="0" min="0"></div>
         <div class="input-row"><label for="planLeaveSalary">Mức lương nghỉ theo kế hoạch công ty (VND/Tháng):</label><input id="planLeaveSalary" type="number" value="10000000" min="0"></div>
         <div class="input-row"><label for="socialSalary">Mức lương tham gia BHXH (VND/Tháng):</label><input id="socialSalary" type="number" value="10000000" min="0"></div>
+
+        <!-- Display monthly allowance amount right under salary inputs -->
+        <div style="margin-top:8px; margin-bottom:10px;">
+          <strong>Số tiền phụ cấp hàng th��ng:</strong> <span id="monthlyAllowanceAmount">-</span>
+        </div>
 
         <h2>B. Căn cứ tính lương</h2>
         <div class="input-row"><label for="workingDaysInMonth">1. Số ngày làm việc trong tháng (ngày):</label><input id="workingDaysInMonth" type="number" value="22" min="0"></div>
@@ -40,7 +47,7 @@
         <!-- a. Ca ngày thường ban ngày -->
         <fieldset>
           <legend class="small"><strong>a) Ca ngày thường (ban ngày)</strong></legend>
-          <div class="input-row"><label for="day_norm_08_17">Giờ bình thường (08:00-17:00):</label><input id="day_norm_08_17" type="number" value="176" min="0"></div>
+          <div class="input-row"><label for="day_norm_08_17">Giờ tổng trong khoảng 08:00-17:00 (bao gồm nghỉ trưa):</label><input id="day_norm_08_17" type="number" value="198" min="0"></div>
           <div class="input-row"><label for="day_ot_17_20">Tăng ca (17:00-20:00):</label><input id="day_ot_17_20" type="number" value="0" min="0"></div>
           <div class="input-row"><label for="day_ot_20_24">Tăng ca đêm (20:00-24:00):</label><input id="day_ot_20_24" type="number" value="0" min="0"></div>
         </fieldset>
@@ -48,10 +55,10 @@
         <!-- b. Ca ban đêm -->
         <fieldset>
           <legend class="small"><strong>b) Ca ban đêm</strong></legend>
-          <div class="input-row"><label for="night_norm_20_22">Giờ bình thường (20:00-22:00):</label><input id="night_norm_20_22" type="number" value="0" min="0"></div>
-          <div class="input-row"><label for="night_22_24">Giờ đêm (22:00-24:00):</label><input id="night_22_24" type="number" value="0" min="0"></div>
-          <div class="input-row"><label for="night_00_04">Giờ đêm (00:00-04:00):</label><input id="night_00_04" type="number" value="0" min="0"></div>
-          <div class="input-row"><label for="night_04_05">Giờ đêm (04:00-05:00):</label><input id="night_04_05" type="number" value="0" min="0"></div>
+          <div class="input-row"><label for="night_norm_20_22">Giờ trong khoảng 20:00-22:00:</label><input id="night_norm_20_22" type="number" value="0" min="0"></div>
+          <div class="input-row"><label for="night_22_24">Giờ trong khoảng 22:00-24:00:</label><input id="night_22_24" type="number" value="0" min="0"></div>
+          <div class="input-row"><label for="night_00_04">Giờ trong khoảng 00:00-04:00:</label><input id="night_00_04" type="number" value="0" min="0"></div>
+          <div class="input-row"><label for="night_04_05">Giờ trong khoảng 04:00-05:00:</label><input id="night_04_05" type="number" value="0" min="0"></div>
           <div class="input-row"><label for="night_05_06">Giờ tăng ca (05:00-06:00):</label><input id="night_05_06" type="number" value="0" min="0"></div>
           <div class="input-row"><label for="night_06_08">Giờ tăng ca (06:00-08:00):</label><input id="night_06_08" type="number" value="0" min="0"></div>
         </fieldset>
@@ -79,8 +86,10 @@
       <div class="card">
         <h2>Kết quả & phân tích</h2>
         <div class="result-box">
+          <p><strong>Tháng tính lương:</strong> <span id="displayPayMonth">-</span></p>
           <p><strong>Tổng tiền lương từ giờ làm (gross):</strong> <span id="totalHourSalary">-</span></p>
           <p><strong>Tổng thu nhập (gồm phụ cấp):</strong> <span id="totalIncome">-</span></p>
+          <p><strong>Phụ cấp hàng tháng (đầu vào):</strong> <span id="monthlyAllowanceAmountResult">-</span></p>
           <p><strong>Khấu trừ BHXH (NV đóng):</strong> <span id="insuranceDeduction">-</span></p>
           <p><strong>Thu nhập miễn thuế (tăng ca miễn thuế):</strong> <span id="taxFreeOvertime">-</span></p>
           <p><strong>Thu nhập chịu thuế:</strong> <span id="taxableIncome">-</span></p>
