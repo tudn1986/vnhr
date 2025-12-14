@@ -1,9 +1,10 @@
 // Hằng số và hệ số có thể điều chỉnh tập trung ở đây.
 // Các hệ số là multiplier so với lương giờ cơ bản (1.0 = 100%).
-export const STANDARD_MONTHLY_HOURS = 176; // mặc định: 22 ngày * 8 giờ
+// Đã điều chỉnh: 26 ngày công x 8 giờ/ngày = 208 giờ
+export const STANDARD_MONTHLY_HOURS = 208; // mặc định: 26 ngày * 8 giờ
 
 export const RATE = {
-  // Ngày thường
+  // Ngày thường (Thứ 2 đến Thứ 7)
   DAY_NORMAL: 1.0,
   DAY_OT_EARLY: 1.5,
   DAY_OT_LATE: 2.1,
@@ -16,7 +17,7 @@ export const RATE = {
   NIGHT_05_06_OT: 2.1,
   NIGHT_06_08_OT: 2.1,
 
-  // Chủ nhật / ngày nghỉ
+  // Chủ nhật / ngày nghỉ (Chủ nhật là ngày nghỉ)
   SUNDAY_DAY: 2.0,
   SUNDAY_NIGHT: 2.7,
 
@@ -26,7 +27,6 @@ export const RATE = {
 };
 
 // Tỷ lệ khấu trừ BHXH (mặc định: người lao động đóng)
-// Bạn có thể chỉnh các giá trị này theo luật hiện hành
 export const INSURANCE_RATES = {
   SOCIAL: 0.08,     // BHXH NV đóng (8%)
   HEALTH: 0.015,    // BHYT NV đóng (1.5%)
@@ -34,13 +34,11 @@ export const INSURANCE_RATES = {
 };
 export const INSURANCE_TOTAL_RATE = INSURANCE_RATES.SOCIAL + INSURANCE_RATES.HEALTH + INSURANCE_RATES.UNEMPLOYMENT;
 
-// Quy định PIT / giảm trừ gia cảnh (có thể chỉnh)
+// Quy định PIT / giảm trừ gia cảnh
 export const PIT_PERSONAL_RELIEF = 11000000; // VNĐ / tháng
 export const PIT_DEPENDENT_RELIEF = 4400000; // VNĐ / người / tháng
 
-// Biểu thuế lũy tiến từng bậc (tháng) — cấu hình mặc định theo ví dụ
-// Mỗi phần tử {limit, rate} nghĩa là: bậc có giới hạn "limit" VND, thuế suất rate.
-// Dãy được áp từ nhỏ đến lớn; phần vượt bậc cuối cùng tính theo rate cuối.
+// Biểu thuế lũy tiến từng bậc (tháng)
 export const PIT_BRACKETS = [
   { limit: 5000000, rate: 0.05 },
   { limit: 10000000, rate: 0.10 },
@@ -51,9 +49,6 @@ export const PIT_BRACKETS = [
   { limit: Infinity, rate: 0.35 }
 ];
 
-// Cấu hình tăng ca miễn thuế (mặc định tắt — đặt TAX_FREE_OVERTIME_HOURS>0 để bật)
-// - TAX_FREE_OVERTIME_HOURS: số giờ tăng ca tối đa được miễn thuế
-// - TAX_FREE_OVERTIME_USE_RATE: % của tiền tăng ca (1.0 = toàn bộ tiền tăng ca miễn)
-// Lưu ý: luật thực tế có thể khác — tùy chỉnh theo chính sách công ty/luật.
-export const TAX_FREE_OVERTIME_HOURS = 0; // mặc định 0 (không miễn)
-export const TAX_FREE_OVERTIME_USE_RATE = 0.0; // 0..1
+// Cấu hình tăng ca miễn thuế (mặc định tắt)
+export const TAX_FREE_OVERTIME_HOURS = 0; 
+export const TAX_FREE_OVERTIME_USE_RATE = 0.0;

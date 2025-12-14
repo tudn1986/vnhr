@@ -25,16 +25,16 @@ function readModelFromInputs() {
       if (input.type === 'number') {
         values[id] = getInputNumber(id);
       } 
-      // Đối với trường tháng (text/month)
+      // Đối với trường select (payMonth) hoặc các loại input khác
       else {
         values[id] = input.value;
       }
     }
   });
   
-  // Tạo mô hình và trả về
+  // Tạo mô hình
   const model = new SalaryModel(values);
-  model.payMonth = values.payMonth || ''; // Gán lại payMonth vào model
+  model.payMonth = values.payMonth || ''; 
   return model;
 }
 
@@ -52,11 +52,15 @@ function recalc() {
  * Thiết lập Controller: Gắn sự kiện cho tất cả inputs
  */
 export function setupController() {
-  // 1. Gắn sự kiện 'input' để tính toán trực tiếp
+  // 1. Gắn sự kiện 'input' (cho number/text) và 'change' (cho select) để tính toán trực tiếp
   inputIds.forEach(id => {
     const input = el(id);
     if (input) {
-      input.addEventListener('input', recalc);
+      if (input.tagName === 'SELECT') {
+          input.addEventListener('change', recalc);
+      } else {
+          input.addEventListener('input', recalc);
+      }
     }
   });
 
@@ -70,7 +74,6 @@ export function setupController() {
   const resetBtn = el('resetBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-      // Logic reset form (ví dụ: tải lại trang hoặc đặt lại giá trị mặc định)
       window.location.reload(); 
     });
   }

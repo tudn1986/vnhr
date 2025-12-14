@@ -19,7 +19,6 @@ function effectiveHours(totalHours, shiftLen = 9, unpaid = 1) {
   return Math.max(0, totalHours - fullShifts * unpaid);
 }
 
-// Giả định class SalaryModel đã được định nghĩa và chứa thuộc tính 'hours' và các thuộc tính lương
 export class SalaryModel {
   constructor(values) {
     this.baseSalary = values.baseSalary;
@@ -66,24 +65,17 @@ export class SalaryModel {
     // --- 1. Tính toán thành phần Lương Giờ/Ngày (Raw/Adjusted) ---
 
     // Tiền lương cơ bản hàng giờ (cho các phần tử không bị điều chỉnh break)
-    comps.otDayEarly = this.hours.day_ot_17_20 * bh * r.DAY_OT_EARLY; // Tăng ca ngày 17:00-20:00
+    comps.otDayEarly = (this.hours.day_ot_17_20 || 0) * bh * r.DAY_OT_EARLY; // Tăng ca ngày 17:00-20:00
 
     comps.night05_06 = (this.hours.night_05_06 || 0) * bh * r.NIGHT_05_06_OT; // Tăng ca đêm sau 05:00
     comps.night06_08 = (this.hours.night_06_08 || 0) * bh * r.NIGHT_06_08_OT; // Tăng ca đêm sau 06:00
 
-    comps.sundayDay = this.hours.sunday_day_hours * bh * r.SUNDAY_DAY;
-    comps.sundayNight = this.hours.sunday_night_hours * bh * r.SUNDAY_NIGHT;
+    comps.sundayDay = (this.hours.sunday_day_hours || 0) * bh * r.SUNDAY_DAY;
+    comps.sundayNight = (this.hours.sunday_night_hours || 0) * bh * r.SUNDAY_NIGHT;
 
     // Lương Nghỉ Phép/Lễ/Kế hoạch (tính theo ngày * 8 giờ)
     comps.holidayDay = (this.hours.holidayDays || 0) * 8 * bh * r.HOLIDAY_DAY;
-    
-    // BỔ SUNG LOGIC holidayNight: Giả định 1 ngày lễ làm đêm = 8 giờ * bh * 3.9
-    // Lưu ý: Tuyệt vời hơn nếu có input nhập giờ làm đêm lễ, nhưng ở đây dùng logic 8 giờ/ngày
-    // Cần có input: holidayNightDays (số ngày làm đêm lễ)
-    // Dựa trên file index.html, không có input này, nên ta giả định người dùng đã tính giờ đêm vào holidayDay.
-    // Nếu phải bổ sung logic:
-    // comps.holidayNight = (this.hours.holidayNightDays || 0) * 8 * bh * r.HOLIDAY_NIGHT;
-    comps.holidayNight = 0; // Tạm giữ 0 do không có input tách biệt trong form
+    comps.holidayNight = 0; // Giữ 0 do thiếu input tách biệt
 
     comps.paidLeave = (this.hours.paidLeaveDays || 0) * 8 * bh;
 
@@ -108,7 +100,7 @@ export class SalaryModel {
     const effectiveNightHours = effectiveHours(totalNightBucketHours, 9, 1);
     const nightScale = totalNightBucketHours > 0 ? (effectiveNightHours / totalNightBucketHours) : 1;
 
-    // SỬA LỖI: Tính toán các thành phần đêm và tăng ca đêm đã điều chỉnh
+    // Tính toán các thành phần đêm và tăng ca đêm đã điều chỉnh
     comps.dayOt20_24 = (this.hours.day_ot_20_24 || 0) * bh * r.DAY_OT_LATE * nightScale;
     comps.night20_22 = (this.hours.night_norm_20_22 || 0) * bh * r.NIGHT_NORMAL_20_22 * nightScale;
     comps.night22_24 = (this.hours.night_22_24 || 0) * bh * r.NIGHT_22_24 * nightScale;
@@ -122,13 +114,13 @@ export class SalaryModel {
       comps.baseDay, comps.otDayEarly, comps.dayOt20_24, comps.night20_22, 
       comps.night22_24, comps.night00_04, comps.night04_05, comps.night05_06, 
       comps.night06_08, comps.sundayDay, comps.sundayNight, comps.holidayDay, 
-      comps.holidayNight, // Đã bổ sung
+      comps.holidayNight, 
       comps.paidLeave, comps.companyPlanLeave, comps.extraOvertime
     ].reduce((s, v) => s + (Number(v) || 0), 0);
 
     // Tính Phụ cấp và Tổng thu nhập
-    comps.allowancePay = (this.allowanceSalary || 0); // Giả định phụ cấp được tính theo allowanceSalary
-    comps.attendanceAllowance = (this.attendanceAllowanceBase || 0); // Giả định phụ cấp chuyên cần là cố định (Chưa có logic trừ khi vắng mặt)
+    comps.allowancePay = (this.allowanceSalary || 0); 
+    comps.attendanceAllowance = (this.attendanceAllowanceBase || 0); 
 
     comps.totalIncome = comps.hourlyTotal + comps.allowancePay + comps.attendanceAllowance + (this.monthlyAllowance || 0);
 
@@ -136,7 +128,6 @@ export class SalaryModel {
     
     const totalDaysForInsurance = (this.workingDaysInMonth || 0) + (this.hours.holidayDays || 0) + (this.hours.paidLeaveDays || 0) + (this.hours.companyPlanLeaveDays || 0);
     
-    // BHXH chỉ tính khi tổng ngày làm/nghỉ có lương >= 14 ngày
     if (totalDaysForInsurance >= 14) {
       comps.insuranceDeduction = (this.socialSalary || 0) * INSURANCE_TOTAL_RATE;
     } else {
@@ -146,8 +137,6 @@ export class SalaryModel {
     // --- 5. Tính Thuế TNCN ---
     
     const taxFreeHours = Math.max(0, Math.min(this.hours.extraOvertimeHours || 0, TAX_FREE_OVERTIME_HOURS || 0));
-    // Tiền tăng ca được miễn thuế (dựa trên lương giờ thường * hệ số 1.5 - lương giờ thường 1.0)
-    // Ở đây ta dùng công thức đơn giản: số giờ * lương giờ * 1.5 (tăng ca ngày)
     comps.taxFreeOvertime = taxFreeHours * bh * RATE.DAY_OT_EARLY * (TAX_FREE_OVERTIME_USE_RATE || 0);
 
     comps.taxableIncome = Math.max(0, comps.totalIncome - (comps.taxFreeOvertime || 0));
@@ -155,7 +144,6 @@ export class SalaryModel {
     const personalRelief = PIT_PERSONAL_RELIEF || 0;
     const dependentRelief = (this.numDependents || 0) * (PIT_DEPENDENT_RELIEF || 0);
 
-    // Thu nhập tính thuế = Thu nhập chịu thuế - Khấu trừ bảo hiểm - Giảm trừ gia cảnh
     comps.taxableBase = Math.max(0, comps.taxableIncome - (comps.insuranceDeduction || 0) - personalRelief - dependentRelief);
     
     comps.personalIncomeTax = computeProgressiveTax(comps.taxableBase);

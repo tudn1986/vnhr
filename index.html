@@ -5,18 +5,23 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>VNHR — Công Cụ Tính Lương (Modular)</title>
   <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding: 20px; max-width: 1100px; margin: auto; }
-    h1 { margin-bottom: 6px; }
-    h2 { margin-top: 22px; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding: 20px; max-width: 1100px; margin: auto; background-color: #f4f4f9; }
+    h1 { margin-bottom: 6px; color: #0056b3; }
+    h2 { margin-top: 22px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 5px; }
     .grid { display: grid; grid-template-columns: 1fr 420px; gap: 20px; align-items: start; }
-    .card { border: 1px solid #ddd; padding: 14px; border-radius: 6px; background: #fff; }
+    .card { border: 1px solid #ddd; padding: 14px; border-radius: 6px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     .input-row { display:flex; gap:10px; margin-bottom:8px; align-items:center; }
-    .input-row label { width: 320px; font-size: 14px; }
-    input[type=number], input[type=text], input[type=month] { flex:1; padding:6px 8px; }
-    button { padding: 8px 12px; margin-top: 8px; cursor: pointer; }
-    .result-box { margin-top: 12px; padding: 10px; border-radius:6px; background:#f7f7f8; }
+    .input-row label { width: 320px; font-size: 14px; color: #555; }
+    input[type=number], input[type=text], select { flex:1; padding:6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+    select { appearance: none; background-color: #fff; }
+    button { padding: 8px 12px; margin-top: 8px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 4px; }
+    button:hover { background-color: #0056b3; }
+    .result-box { margin-top: 12px; padding: 15px; border-radius:6px; background:#e9f7ee; border: 1px solid #28a745; }
+    .result-box strong { color: #000; }
     details { margin-top:8px; }
     .small { font-size: 13px; color:#555; }
+    fieldset { border: 1px solid #eee; padding: 10px; margin-bottom: 15px; border-radius: 4px; }
+    legend { font-weight: bold; padding: 0 5px; color: #333; }
   </style>
 </head>
 <body>
@@ -27,7 +32,23 @@
     <div>
       <div class="card">
         <h2>A. Mức lương thỏa thuận theo HĐLĐ</h2>
-        <div class="input-row"><label for="payMonth">Tháng tính lương:</label><input id="payMonth" type="month"></div>
+        <div class="input-row">
+            <label for="payMonth">Tháng tính lương (1-12):</label>
+            <select id="payMonth">
+                <option value="1">Tháng 1</option>
+                <option value="2">Tháng 2</option>
+                <option value="3">Tháng 3</option>
+                <option value="4">Tháng 4</option>
+                <option value="5">Tháng 5</option>
+                <option value="6">Tháng 6</option>
+                <option value="7">Tháng 7</option>
+                <option value="8">Tháng 8</option>
+                <option value="9">Tháng 9</option>
+                <option value="10">Tháng 10</option>
+                <option value="11">Tháng 11</option>
+                <option value="12" selected>Tháng 12</option>
+            </select>
+        </div>
         <div class="input-row"><label for="baseSalary">Mức lương cơ bản (VND/Tháng):</label><input id="baseSalary" type="number" value="10000000" min="0"></div>
         <div class="input-row"><label for="allowanceSalary">Mức lương tính phụ cấp (VND/Tháng):</label><input id="allowanceSalary" type="number" value="10000000" min="0"></div>
         <div class="input-row"><label for="monthlyAllowance">Mức phụ cấp (VND/Tháng):</label><input id="monthlyAllowance" type="number" value="0" min="0"></div>
@@ -35,24 +56,21 @@
         <div class="input-row"><label for="planLeaveSalary">Mức lương nghỉ theo kế hoạch công ty (VND/Tháng):</label><input id="planLeaveSalary" type="number" value="10000000" min="0"></div>
         <div class="input-row"><label for="socialSalary">Mức lương tham gia BHXH (VND/Tháng):</label><input id="socialSalary" type="number" value="10000000" min="0"></div>
 
-        <!-- Display monthly allowance amount right under salary inputs -->
         <div style="margin-top:8px; margin-bottom:10px;">
-          <strong>Số tiền phụ cấp hàng th��ng:</strong> <span id="monthlyAllowanceAmount">-</span>
+          <strong>Số tiền phụ cấp hàng tháng:</strong> <span id="monthlyAllowanceAmount">-</span>
         </div>
 
-        <h2>B. Căn cứ tính lương</h2>
-        <div class="input-row"><label for="workingDaysInMonth">1. Số ngày làm việc trong tháng (ngày):</label><input id="workingDaysInMonth" type="number" value="22" min="0"></div>
+        <h2>B. Căn cứ tính lương (Chuẩn công: 26 ngày / 208 giờ)</h2>
+        <div class="input-row"><label for="workingDaysInMonth">1. Số ngày làm việc trong tháng (ngày):</label><input id="workingDaysInMonth" type="number" value="26" min="0"></div>
 
         <h3>Số giờ làm việc thực tế</h3>
-        <!-- a. Ca ngày thường ban ngày -->
         <fieldset>
-          <legend class="small"><strong>a) Ca ngày thường (ban ngày)</strong></legend>
-          <div class="input-row"><label for="day_norm_08_17">Giờ tổng trong khoảng 08:00-17:00 (bao gồm nghỉ trưa):</label><input id="day_norm_08_17" type="number" value="198" min="0"></div>
+          <legend class="small"><strong>a) Ca ngày thường (Thứ 2 - Thứ 7, ban ngày)</strong></legend>
+          <div class="input-row"><label for="day_norm_08_17">Giờ tổng trong khoảng 08:00-17:00 (bao gồm nghỉ trưa):</label><input id="day_norm_08_17" type="number" value="234" min="0"></div>
           <div class="input-row"><label for="day_ot_17_20">Tăng ca (17:00-20:00):</label><input id="day_ot_17_20" type="number" value="0" min="0"></div>
           <div class="input-row"><label for="day_ot_20_24">Tăng ca đêm (20:00-24:00):</label><input id="day_ot_20_24" type="number" value="0" min="0"></div>
         </fieldset>
 
-        <!-- b. Ca ban đêm -->
         <fieldset>
           <legend class="small"><strong>b) Ca ban đêm</strong></legend>
           <div class="input-row"><label for="night_norm_20_22">Giờ trong khoảng 20:00-22:00:</label><input id="night_norm_20_22" type="number" value="0" min="0"></div>
@@ -63,11 +81,9 @@
           <div class="input-row"><label for="night_06_08">Giờ tăng ca (06:00-08:00):</label><input id="night_06_08" type="number" value="0" min="0"></div>
         </fieldset>
 
-        <!-- c, d -->
-        <div class="input-row"><label for="sunday_day_hours">c) Giờ làm chủ nhật (08:00-22:00):</label><input id="sunday_day_hours" type="number" value="0" min="0"></div>
-        <div class="input-row"><label for="sunday_night_hours">d) Giờ làm chủ nhật (20:00-08:00):</label><input id="sunday_night_hours" type="number" value="0" min="0"></div>
+        <div class="input-row"><label for="sunday_day_hours">c) Giờ làm chủ nhật (08:00-22:00, Hệ số 2.0):</label><input id="sunday_day_hours" type="number" value="0" min="0"></div>
+        <div class="input-row"><label for="sunday_night_hours">d) Giờ làm chủ nhật đêm (20:00-08:00, Hệ số 2.7):</label><input id="sunday_night_hours" type="number" value="0" min="0"></div>
 
-        <!-- e, f, g, h -->
         <div class="input-row"><label for="holidayDays">e) Số ngày nghỉ lễ, tết (có hưởng lương):</label><input id="holidayDays" type="number" value="0" min="0"></div>
         <div class="input-row"><label for="paidLeaveDays">f) Số ngày nghỉ phép (có hưởng lương):</label><input id="paidLeaveDays" type="number" value="0" min="0"></div>
         <div class="input-row"><label for="companyPlanLeaveDays">g) Số ngày nghỉ kế hoạch công ty:</label><input id="companyPlanLeaveDays" type="number" value="0" min="0"></div>
