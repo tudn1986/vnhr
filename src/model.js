@@ -13,10 +13,10 @@ import { computeProgressiveTax } from './utils.js';
 /**
  * Hàm tra cứu mức giảm trừ gia cảnh dựa trên ngày chi trả lương.
  */
-function getPitReliefRates(paymentYear, calculationMonth, paymentDay) {
-    // Sử dụng Năm chi trả, Tháng tính lương (làm căn cứ tính thuế cho tháng đó), và Ngày chi trả
+function getPitReliefRates(paymentYear, paymentMonth, paymentDay) {
+    // Sử dụng Năm, Tháng, Ngày chi trả.
     // Lưu ý: JavaScript dùng tháng từ 0-11, nên phải trừ 1
-    const paymentDate = new Date(paymentYear, calculationMonth - 1, paymentDay);
+    const paymentDate = new Date(paymentYear, paymentMonth - 1, paymentDay);
     
     let lastRates = PIT_RELIEF_RATES[0]; 
 
@@ -26,7 +26,6 @@ function getPitReliefRates(paymentYear, calculationMonth, paymentDay) {
         if (paymentDate.getTime() >= rate.effectiveDate.getTime()) {
             lastRates = rate;
         } else {
-            // Dãy đã sắp xếp, nếu ngày chi trả nhỏ hơn ngày hiệu lực thì dừng
             break; 
         }
     }
@@ -60,8 +59,10 @@ export class SalaryModel {
     this.workingDaysInMonth = values.workingDaysInMonth;
     this.numDependents = values.numDependents;
     
-    // Thuộc tính thời gian mới
-    this.calculationMonth = parseInt(values.payMonth);
+    // THUỘC TÍNH THỜI GIAN MỚI
+    this.periodMonth = parseInt(values.periodMonth);
+    this.periodYear = parseInt(values.periodYear);
+    this.paymentMonth = parseInt(values.paymentMonth);
     this.paymentYear = parseInt(values.paymentYear);
     this.paymentDay = parseInt(values.paymentDay);
     
@@ -90,7 +91,7 @@ export class SalaryModel {
     const bh_ot = this.hourlyRateOvertime();       
     const comps = {};
 
-    // --- 1. TÍNH LƯƠNG TỪ GIỜ LÀM ---
+    // --- 1. TÍNH LƯƠNG TỪ GIỜ LÀM (Giữ nguyên) ---
 
     comps.otDayEarly = (this.hours.day_ot_17_20 || 0) * bh_ot * r.DAY_OT_EARLY; 
     comps.night05_06 = (this.hours.night_05_06 || 0) * bh_ot * r.NIGHT_05_06_OT; 
@@ -157,7 +158,7 @@ export class SalaryModel {
 
 
     // --- TÍNH THUẾ TNCN SỬ DỤNG MỨC GIẢM TRỪ ĐỘNG ---
-    const pitRates = getPitReliefRates(this.paymentYear, this.calculationMonth, this.paymentDay);
+    const pitRates = getPitReliefRates(this.paymentYear, this.paymentMonth, this.paymentDay);
     
     // Lấy mức giảm trừ ĐỘNG
     const personalRelief = pitRates.personal;

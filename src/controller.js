@@ -4,11 +4,13 @@ import { getInputNumber, el } from './utils.js';
 
 // Danh sách tất cả các ID input cần theo dõi
 const inputIds = [
-  'payMonth', 
-  'paymentYear', // Mới
-  'paymentDay',  // Mới
-  'salaryForNormalHours', // Mới
-  'salaryForOvertime',    // Mới
+  'periodMonth',   // MỚI
+  'periodYear',    // MỚI
+  'paymentMonth',  // MỚI
+  'paymentYear',   // Đã có
+  'paymentDay',    // Đã có
+  'salaryForNormalHours', 
+  'salaryForOvertime', 
   'allowanceSalary', 
   'attendanceAllowanceBase',
   'planLeaveSalary', 
@@ -30,7 +32,7 @@ function readModelFromInputs() {
   inputIds.forEach(id => {
     const input = el(id);
     if (input) {
-      if (input.type === 'number') {
+      if (input.type === 'number' || input.id === 'paymentDay' || input.id === 'paymentYear') {
         values[id] = getInputNumber(id);
       } 
       else {
@@ -39,15 +41,16 @@ function readModelFromInputs() {
     }
   });
   
-  // Đảm bảo các trường cũ bị loại bỏ có giá trị mặc định là 0
   values['monthlyAllowance'] = 0; 
   
   const model = new SalaryModel(values);
   
   // Lưu các giá trị thời gian thanh toán vào model
-  model.calculationMonth = parseInt(values.payMonth);
+  model.periodMonth = parseInt(values.periodMonth);
+  model.periodYear = parseInt(values.periodYear);
+  model.paymentMonth = parseInt(values.paymentMonth);
   model.paymentYear = parseInt(values.paymentYear);
-  model.paymentDay = values.paymentDay;
+  model.paymentDay = parseInt(values.paymentDay);
 
   return model;
 }
@@ -58,8 +61,8 @@ function readModelFromInputs() {
 function recalc() {
   const model = readModelFromInputs();
   const comps = model.computeComponents();
-  // comps.payMonth sẽ là tháng tính lương (calculationMonth)
-  comps.payMonth = model.calculationMonth;
+  // comps.payMonth sẽ là tháng phát sinh lương (periodMonth)
+  comps.payMonth = model.periodMonth;
   renderTotals(comps);
 }
 
