@@ -66,6 +66,8 @@
         <div class="input-row"><label for="companyPlanLeaveDays">g) Số ngày nghỉ kế hoạch công ty:</label><input id="companyPlanLeaveDays" type="number" value="0" min="0"></div>
         <div class="input-row"><label for="extraOvertimeHours">h) Tổng số giờ tăng ca (tổng báo cáo):</label><input id="extraOvertimeHours" type="number" value="0" min="0"></div>
 
+        <div class="input-row"><label for="numDependents">Số người phụ thuộc (để giảm trừ):</label><input id="numDependents" type="number" value="0" min="0"></div>
+
         <div style="margin-top:8px;">
           <button id="recalcBtn">Tính lại</button>
           <button id="resetBtn" type="button">Reset</button>
@@ -78,11 +80,19 @@
         <h2>Kết quả & phân tích</h2>
         <div class="result-box">
           <p><strong>Tổng tiền lương từ giờ làm (gross):</strong> <span id="totalHourSalary">-</span></p>
+          <p><strong>Tổng thu nhập (gồm phụ cấp):</strong> <span id="totalIncome">-</span></p>
+          <p><strong>Khấu trừ BHXH (NV đóng):</strong> <span id="insuranceDeduction">-</span></p>
+          <p><strong>Thu nhập miễn thuế (tăng ca miễn thuế):</strong> <span id="taxFreeOvertime">-</span></p>
+          <p><strong>Thu nhập chịu thuế:</strong> <span id="taxableIncome">-</span></p>
+          <p><strong>Thu nhập tính thuế (sau khấu trừ):</strong> <span id="taxableBase">-</span></p>
+          <p><strong>Thuế TNCN cần nộp:</strong> <span id="personalIncomeTax">-</span></p>
+          <p><strong>Lương thực nhận:</strong> <span id="netSalary">-</span></p>
+
           <details>
-            <summary>Chi tiết</summary>
+            <summary>Chi tiết phân tích</summary>
             <ul id="breakdownList" class="small"></ul>
           </details>
-          <p class="small">Ghi chú: Các con số tính theo hệ số trong module constants. Xem console để debug.</p>
+          <p class="small">Ghi chú: Các hệ số, mức giảm trừ và biểu thuế có thể cấu hình trong src/constants.js</p>
         </div>
       </div>
     </div>

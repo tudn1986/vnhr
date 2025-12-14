@@ -1,4 +1,4 @@
-import { getInputNumber, setText } from './utils.js';
+import { getInputNumber } from './utils.js';
 import { SalaryModel } from './model.js';
 import { renderTotals } from './view.js';
 
@@ -10,7 +10,8 @@ export function setupController() {
     'day_norm_08_17', 'day_ot_17_20', 'day_ot_20_24',
     'night_norm_20_22', 'night_22_24', 'night_00_04', 'night_04_05', 'night_05_06', 'night_06_08',
     'sunday_day_hours', 'sunday_night_hours',
-    'holidayDays', 'paidLeaveDays', 'companyPlanLeaveDays', 'extraOvertimeHours'
+    'holidayDays', 'paidLeaveDays', 'companyPlanLeaveDays', 'extraOvertimeHours',
+    'numDependents'
   ];
 
   function readModelFromInputs() {
@@ -37,7 +38,8 @@ export function setupController() {
         paidLeaveDays: getInputNumber('paidLeaveDays'),
         companyPlanLeaveDays: getInputNumber('companyPlanLeaveDays'),
         extraOvertimeHours: getInputNumber('extraOvertimeHours')
-      }
+      },
+      numDependents: getInputNumber('numDependents')
     };
     return new SalaryModel(values);
   }
@@ -46,17 +48,8 @@ export function setupController() {
     const model = readModelFromInputs();
     const comps = model.computeComponents();
 
-    // Điều kiện phụ cấp chuyên cần: ví dụ đơn giản — nếu không có nghỉ phép, nghỉ không hưởng, không đi muộn...
-    // Hiện chưa có input đủ để kiểm tra điều kiện => chỉ hiển thị nếu attendanceAllowanceBase > 0
-    if (model.attendanceAllowanceBase > 0) {
-      // Nếu bạn có luật cụ thể để xác định điều kiện hưởng, triển khai ở đây.
-      comps.attendanceAllowance = model.attendanceAllowanceBase;
-    } else {
-      comps.attendanceAllowance = 0;
-    }
-
-    // cộng phụ cấp chuyên cần vào tổng (nếu có)
-    comps.total = (comps.total || 0) + (comps.attendanceAllowance || 0);
+    // Nếu có điều kiện đặc biệt cho phụ cấp chuyên cần, xử lý và cập nhật comps.attendanceAllowance ở đây.
+    // (Hiện mẫu model đã chứa attendanceAllowanceBase và controller có thể quyết định cho hưởng hoặc không)
 
     renderTotals(comps);
   }
@@ -75,7 +68,6 @@ export function setupController() {
     inputIds.forEach(id => {
       const e = document.getElementById(id);
       if (!e) return;
-      // reset về value mặc định (nếu cần bạn có thể lưu default)
       if (id === 'baseSalary') e.value = 10000000;
       else if (id === 'day_norm_08_17') e.value = 176;
       else e.value = 0;

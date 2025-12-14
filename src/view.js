@@ -2,13 +2,25 @@ import { formatVND, el } from './utils.js';
 
 // View: cập nhật DOM
 export function renderTotals(comps) {
-  const total = comps.total || 0;
-  const totalEl = el('totalHourSalary');
-  if (totalEl) totalEl.textContent = formatVND(total);
+  if (!comps) return;
+
+  const set = (id, value) => {
+    const e = el(id);
+    if (e) e.textContent = formatVND(value || 0);
+  };
+
+  set('totalHourSalary', comps.hourlyTotal);
+  set('totalIncome', comps.totalIncome);
+  set('insuranceDeduction', comps.insuranceDeduction);
+  set('taxFreeOvertime', comps.taxFreeOvertime);
+  set('taxableIncome', comps.taxableIncome);
+  set('taxableBase', comps.taxableBase);
+  set('personalIncomeTax', comps.personalIncomeTax);
+  set('netSalary', comps.netSalary);
 
   const breakdownList = el('breakdownList');
   if (!breakdownList) return;
-  breakdownList.innerHTML = ''; // reset
+  breakdownList.innerHTML = '';
 
   const map = {
     baseDay: 'Giờ hành chính (08-17)',
@@ -27,6 +39,7 @@ export function renderTotals(comps) {
     paidLeave: 'Nghỉ phép có hưởng lương',
     companyPlanLeave: 'Nghỉ theo kế hoạch công ty',
     extraOvertime: 'Tăng ca tổng hợp',
+    allowancePay: 'Tiền phụ cấp theo giờ',
     attendanceAllowance: 'Phụ cấp chuyên cần (nếu có)'
   };
 
