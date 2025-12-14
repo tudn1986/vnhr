@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>VNHR — Công Cụ Tính Lương (Tối ưu)</title>
   <style>
-    /* CSS giữ nguyên và tinh chỉnh nhẹ cho dễ đọc */
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding: 20px; max-width: 1100px; margin: auto; background-color: #f4f4f9; }
     h1 { margin-bottom: 6px; color: #0056b3; }
     h2 { margin-top: 22px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 5px; }
@@ -64,7 +63,7 @@
         
         <h3>2. Giờ làm việc thực tế (Thứ 2 - Thứ 7)</h3>
         
-        <div class="input-row"><label for="day_norm_08_17">Giờ làm Hành chính ban ngày (08:00-17:00, Hệ số 1.0):</label><input id="day_norm_08_17" type="number" value="234" min="0"></div>
+        <div class="input-row"><label for="day_norm_08_17">Giờ làm Hành chính ban ngày (08:00-17:00, Giờ có lương Net, Hệ số 1.0):</label><input id="day_norm_08_17" type="number" value="208" min="0"></div>
         
         <details>
             <summary>Giờ Tăng ca ngày thường</summary>
@@ -114,12 +113,12 @@
           <p><strong>Tổng tiền lương từ giờ làm (gross):</strong> <span id="totalHourSalary">-</span></p>
           <p><strong>Tổng thu nhập (gồm phụ cấp):</strong> <span id="totalIncome">-</span></p>
           <p><strong>Phụ cấp hàng tháng (đầu vào):</strong> <span id="monthlyAllowanceAmountResult">-</span></p>
-          <p><strong>Khấu trừ BHXH (NV đóng):</strong> <span id="insuranceDeduction">-</span></p>
-          <p><strong>Thu nhập miễn thuế (tăng ca miễn thuế):</strong> <span id="taxFreeOvertime">-</span></p>
-          <p><strong>Thu nhập chịu thuế:</strong> <span id="taxableIncome">-</span></p>
-          <p><strong>Thu nhập tính thuế (sau khấu trừ):</strong> <span id="taxableBase">-</span></p>
-          <p><strong>Thuế TNCN cần nộp:</strong> <span id="personalIncomeTax">-</span></p>
-          <p><strong>Lương thực nhận:</strong> <span id="netSalary">-</span></p>
+          <p><strong>Khấu trừ BHXH (NV đóng):</strong> <span id=\"insuranceDeduction\">-</span></p>
+          <p><strong>Thu nhập miễn thuế (tăng ca miễn thuế):</strong> <span id=\"taxFreeOvertime\">-</span></p>
+          <p><strong>Thu nhập chịu thuế:</strong> <span id=\"taxableIncome\">-</span></p>
+          <p><strong>Thu nhập tính thuế (sau khấu trừ):</strong> <span id=\"taxableBase\">-</span></p>
+          <p><strong>Thuế TNCN cần nộp:</strong> <span id=\"personalIncomeTax\">-</span></p>
+          <p><strong>Lương thực nhận:</strong> <span id=\"netSalary\">-</span></p>
 
           <details>
             <summary>Chi tiết phân tích Giờ làm việc</summary>

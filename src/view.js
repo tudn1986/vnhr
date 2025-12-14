@@ -3,8 +3,8 @@ import { formatVND, setText, el } from './utils.js';
 // Hàm hiển thị tổng quan và chi tiết kết quả lên giao diện
 export function renderTotals(comps) {
   // set displayPayMonth from comps.payMonth
-  setText('displayPayMonth', comps.payMonth || 'Chưa xác định');
-
+  setText('displayPayMonth', 'Tháng ' + comps.payMonth);
+  
   // Cập nhật các trường kết quả chính
   setText('totalHourSalary', formatVND(comps.hourlyTotal));
   setText('totalIncome', formatVND(comps.totalIncome));
@@ -16,11 +16,11 @@ export function renderTotals(comps) {
   setText('personalIncomeTax', formatVND(comps.personalIncomeTax));
   setText('netSalary', formatVND(comps.netSalary));
 
-  // Cập nhật chi tiết phân tích (ví dụ: chỉ hiển thị hourlyTotal breakdown)
+  // Cập nhật chi tiết phân tích Giờ làm việc
   const breakdownList = el('breakdownList');
   if (breakdownList) {
     breakdownList.innerHTML = `
-        <li>Lương Giờ/Ngày thường (điều chỉnh): ${formatVND(comps.baseDay)}</li>
+        <li>Lương Giờ/Ngày thường (Net, 8h/ngày): ${formatVND(comps.baseDay)}</li>
         <li>Tăng ca ngày (150%): ${formatVND(comps.otDayEarly)}</li>
         <li>Tăng ca đêm (20:00-24:00 đã điều chỉnh): ${formatVND(comps.dayOt20_24)}</li>
         <li>Giờ đêm cơ bản (đã điều chỉnh): ${formatVND(comps.night20_22 + comps.night22_24 + comps.night00_04 + comps.night04_05)}</li>

@@ -11,7 +11,7 @@ import { computeProgressiveTax } from './utils.js';
 
 /**
  * Hàm tính giờ hiệu dụng sau khi trừ giờ nghỉ không lương (Break)
- * Áp dụng logic: trừ 1 giờ không lương cho mỗi ca 9 giờ đầy đủ.
+ * Chức năng này chỉ còn áp dụng cho các ca làm đêm/tăng ca đêm (Gross Hours)
  */
 function effectiveHours(totalHours, shiftLen = 9, unpaid = 1) {
   if (!totalHours || totalHours <= 0) return 0;
@@ -21,13 +21,12 @@ function effectiveHours(totalHours, shiftLen = 9, unpaid = 1) {
 
 export class SalaryModel {
   constructor(values) {
-    // Đã đổi tên biến baseSalary thành salaryForHours để rõ ràng hơn
-    this.salaryForHours = values.baseSalary; // Đây là Mức lương cơ bản tính giờ
-    this.allowanceSalary = values.allowanceSalary; // (Giữ lại dù ẩn)
+    this.salaryForHours = values.baseSalary; // Mức lương cơ bản tính giờ
+    this.allowanceSalary = values.allowanceSalary; 
     this.socialSalary = values.socialSalary;
-    this.planLeaveSalary = values.planLeaveSalary; // (Giữ lại dù ẩn)
+    this.planLeaveSalary = values.planLeaveSalary; 
     this.monthlyAllowance = values.monthlyAllowance;
-    this.attendanceAllowanceBase = values.attendanceAllowanceBase; // (Giữ lại dù ẩn)
+    this.attendanceAllowanceBase = values.attendanceAllowanceBase; 
     this.workingDaysInMonth = values.workingDaysInMonth;
     this.numDependents = values.numDependents;
     
@@ -80,12 +79,11 @@ export class SalaryModel {
 
     comps.extraOvertime = (this.hours.extraOvertimeHours || 0) * bh * r.DAY_OT_EARLY;
 
-    // Xử lý Giờ làm bị Điều chỉnh (Trừ giờ nghỉ không lương)
-    const totalDayBucketHours = (this.hours.day_norm_08_17 || 0);
-    const effectiveDayHours = effectiveHours(totalDayBucketHours, 9, 1);
-    const dayScale = totalDayBucketHours > 0 ? (effectiveDayHours / totalDayBucketHours) : 1;
-    comps.baseDay = totalDayBucketHours * bh * r.DAY_NORMAL * dayScale; 
+    // ĐÃ SỬA: Xử lý Giờ làm Hành chính (SỬ DỤNG GIỜ NET NHẬP VÀO)
+    const netDayHours = (this.hours.day_norm_08_17 || 0); 
+    comps.baseDay = netDayHours * bh * r.DAY_NORMAL; 
 
+    // Xử lý Giờ làm Đêm (Giữ nguyên logic trừ giờ nghỉ 1 tiếng/9 tiếng ca đêm)
     const totalNightBucketHours = (this.hours.day_ot_20_24 || 0) + (this.hours.night_norm_20_22 || 0) + 
                                   (this.hours.night_22_24 || 0) + (this.hours.night_00_04 || 0) + 
                                   (this.hours.night_04_05 || 0);
@@ -109,11 +107,9 @@ export class SalaryModel {
 
     // --- 2. TÍNH PHỤ CẤP VÀ TỔNG THU NHẬP ---
     
-    // Lưu trữ các khoản phụ cấp
     comps.allowancePay = (this.allowanceSalary || 0); 
     comps.attendanceAllowance = (this.attendanceAllowanceBase || 0); 
     
-    // TỔNG THU NHẬP (Gross) = Lương từ giờ làm + Phụ cấp cố định + Các khoản phụ cấp khác
     comps.totalIncome = comps.hourlyTotal + comps.allowancePay + comps.attendanceAllowance + (this.monthlyAllowance || 0);
 
     // --- 3. TÍNH KHẤU TRỪ BHXH, TNCN VÀ NET SALARY ---
