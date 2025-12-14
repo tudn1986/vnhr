@@ -1,6 +1,4 @@
 // Hằng số và hệ số có thể điều chỉnh tập trung ở đây.
-// Các hệ số là multiplier so với lương giờ cơ bản (1.0 = 100%).
-// Đã điều chỉnh: 26 ngày công x 8 giờ/ngày = 208 giờ
 export const STANDARD_MONTHLY_HOURS = 208; // mặc định: 26 ngày * 8 giờ
 
 export const RATE = {
@@ -17,7 +15,7 @@ export const RATE = {
   NIGHT_05_06_OT: 2.1,
   NIGHT_06_08_OT: 2.1,
 
-  // Chủ nhật / ngày nghỉ (Chủ nhật là ngày nghỉ)
+  // Chủ nhật / ngày nghỉ
   SUNDAY_DAY: 2.0,
   SUNDAY_NIGHT: 2.7,
 
@@ -34,9 +32,13 @@ export const INSURANCE_RATES = {
 };
 export const INSURANCE_TOTAL_RATE = INSURANCE_RATES.SOCIAL + INSURANCE_RATES.HEALTH + INSURANCE_RATES.UNEMPLOYMENT;
 
-// Quy định PIT / giảm trừ gia cảnh
-export const PIT_PERSONAL_RELIEF = 11000000; // VNĐ / tháng
-export const PIT_DEPENDENT_RELIEF = 4400000; // VNĐ / người / tháng
+// --- DỮ LIỆU GIẢM TRỪ GIA CẢNH ĐỘNG ---
+export const PIT_RELIEF_RATES = [
+    // Mức cũ theo Nghị quyết 954/2020/UBTVQH14
+    { effectiveDate: new Date(2020, 6, 1), personal: 11000000, dependent: 4400000 }, 
+    // Mức mới theo Nghị quyết 110/2025/UBTVQH15 [cite: 6]
+    { effectiveDate: new Date(2026, 0, 1), personal: 15500000, dependent: 6200000 } 
+];
 
 // Biểu thuế lũy tiến từng bậc (tháng)
 export const PIT_BRACKETS = [

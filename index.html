@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>VNHR — Công Cụ Tính Lương (Tối ưu)</title>
+  <title>VNHR — Công Cụ Tính Lương (Chi tiết)</title>
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding: 20px; max-width: 1100px; margin: auto; background-color: #f4f4f9; }
     h1 { margin-bottom: 6px; color: #0056b3; }
@@ -23,6 +23,9 @@
     summary { font-weight: bold; cursor: pointer; color: #0056b3; }
     .small { font-size: 13px; color:#555; }
     fieldset { border: none; padding: 0; margin: 0; }
+    .detail-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+    .detail-table th, .detail-table td { border: 1px solid #ddd; padding: 4px; text-align: left; }
+    .detail-table th { background-color: #f0f0f0; }
   </style>
 </head>
 <body>
@@ -32,32 +35,44 @@
   <div class="grid">
     <div>
       <div class="card">
-        <h2>A. Mức Lương & Giảm Trừ Cá Nhân</h2>
+        <h2>A. Mức Lương & Chi tiết Thanh toán</h2>
+        
         <div class="input-row">
-            <label for="payMonth">Tháng tính lương (1-12):</label>
+            <label for="payMonth">Tháng tính lương (Period Month, 1-12):</label>
             <select id="payMonth">
-                <option value="1">Tháng 1</option>
-                <option value="2">Tháng 2</option>
-                <option value="3">Tháng 3</option>
-                <option value="4">Tháng 4</option>
-                <option value="5">Tháng 5</option>
-                <option value="6">Tháng 6</option>
-                <option value="7">Tháng 7</option>
-                <option value="8">Tháng 8</option>
-                <option value="9">Tháng 9</option>
-                <option value="10">Tháng 10</option>
-                <option value="11">Tháng 11</option>
-                <option value="12" selected>Tháng 12</option>
+                <option value="1">Tháng 1</option><option value="2">Tháng 2</option><option value="3">Tháng 3</option>
+                <option value="4">Tháng 4</option><option value="5">Tháng 5</option><option value="6">Tháng 6</option>
+                <option value="7">Tháng 7</option><option value="8">Tháng 8</option><option value="9">Tháng 9</option>
+                <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12" selected>Tháng 12</option>
             </select>
         </div>
-        <div class="input-row"><label for="baseSalary">1. Lương cơ bản làm căn cứ tính giờ làm/tăng ca (VND/Tháng):</label><input id="baseSalary" type="number" value="10000000" min="0"></div>
-        <div class="input-row"><label for="socialSalary">2. Mức lương đóng Bảo hiểm Xã hội (BHXH) (VND/Tháng):</label><input id="socialSalary" type="number" value="10000000" min="0"></div>
-        <div class="input-row"><label for="monthlyAllowance">3. Tổng Phụ cấp cố định (VND/Tháng):</label><input id="monthlyAllowance" type="number" value="0" min="0"></div>
-        <div class="input-row"><label for="numDependents">4. Số người phụ thuộc (để giảm trừ TNCN):</label><input id="numDependents" type="number" value="0" min="0"></div>
+        <div class="input-row">
+            <label for="paymentYear">Năm chi trả tiền lương (Căn cứ tính thuế):</label>
+            <select id="paymentYear">
+                <option value="2024">2024</option>
+                <option value="2025" selected>2025</option>
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+            </select>
+        </div>
+        <div class="input-row">
+            <label for="paymentDay">Ngày chi trả tiền lương (1-31):</label>
+            <input id="paymentDay" type="number" value="5" min="1" max="31">
+        </div>
+        <hr/>
+        
+        <div class="input-row"><label for="salaryForNormalHours">1. Lương căn cứ tính Tiền lương (Giờ thường) (VND/Tháng):</label><input id="salaryForNormalHours" type="number" value="10000000" min="0"></div>
+        <div class="input-row"><label for="salaryForOvertime">2. Lương căn cứ tính Tăng ca (VND/Tháng):</label><input id="salaryForOvertime" type="number" value="10000000" min="0"></div>
+
+        <div class="input-row"><label for="allowanceSalary">3. Lương căn cứ tính Phụ cấp (VND/Tháng):</label><input id="allowanceSalary" type="number" value="10000000" min="0"></div>
+        <div class="input-row"><label for="socialSalary">4. Mức lương đóng Bảo hiểm Xã hội (BHXH) (VND/Tháng):</label><input id="socialSalary" type="number" value="10000000" min="0"></div>
+        
+        <div class="input-row"><label for="attendanceAllowanceBase">5. Mức hưởng Phụ cấp Chuyên cần (VND/Tháng):</label><input id="attendanceAllowanceBase" type="number" value="500000" min="0"></div>
+        <div class="input-row"><label for="numDependents">6. Số người phụ thuộc (để giảm trừ TNCN):</label><input id="numDependents" type="number" value="0" min="0"></div>
         
         <hr style="margin-top: 15px;">
 
-        <h2>B. Giờ Làm Việc & Ngày Công (Chuẩn công: 26 ngày / 208 giờ)</h2>
+        <h2>B. Giờ Làm Việc & Ngày Công (Chuẩn công: 26 ngày / 208 giờ Net)</h2>
         
         <div class="input-row"><label for="workingDaysInMonth">1. Tổng số ngày làm việc chuẩn trong tháng (Ngày):</label><input id="workingDaysInMonth" type="number" value="26" min="0"></div>
         
@@ -93,8 +108,6 @@
         <div class="input-row"><label for="extraOvertimeHours">Tổng giờ tăng ca phụ trội (Giờ):</label><input id="extraOvertimeHours" type="number" value="0" min="0"></div>
         
         <div style="display: none;">
-            <input id="allowanceSalary" type="number" value="10000000">
-            <input id="attendanceAllowanceBase" type="number" value="0">
             <input id="planLeaveSalary" type="number" value="10000000">
         </div>
 
@@ -112,20 +125,27 @@
           <p><strong>Tháng tính lương:</strong> <span id="displayPayMonth">-</span></p>
           <p><strong>Tổng tiền lương từ giờ làm (gross):</strong> <span id="totalHourSalary">-</span></p>
           <p><strong>Tổng thu nhập (gồm phụ cấp):</strong> <span id="totalIncome">-</span></p>
-          <p><strong>Phụ cấp hàng tháng (đầu vào):</strong> <span id="monthlyAllowanceAmountResult">-</span></p>
-          <p><strong>Khấu trừ BHXH (NV đóng):</strong> <span id=\"insuranceDeduction\">-</span></p>
-          <p><strong>Thu nhập miễn thuế (tăng ca miễn thuế):</strong> <span id=\"taxFreeOvertime\">-</span></p>
-          <p><strong>Thu nhập chịu thuế:</strong> <span id=\"taxableIncome\">-</span></p>
-          <p><strong>Thu nhập tính thuế (sau khấu trừ):</strong> <span id=\"taxableBase\">-</span></p>
-          <p><strong>Thuế TNCN cần nộp:</strong> <span id=\"personalIncomeTax\">-</span></p>
-          <p><strong>Lương thực nhận:</strong> <span id=\"netSalary\">-</span></p>
+          <p><strong>Phụ cấp Chuyên cần (đầu vào):</strong> <span id="monthlyAllowanceAmountResult">-</span></p>
+          <p><strong>Khấu trừ BHXH (NV đóng):</strong> <strong id="insuranceDeduction">-</strong></p>
+          <p><strong>Thuế TNCN cần nộp:</strong> <strong id="personalIncomeTax">-</strong></p>
+          <p><strong>Lương thực nhận:</strong> <strong id="netSalary">-</strong></p>
 
           <details>
-            <summary>Chi tiết phân tích Giờ làm việc</summary>
-            <ul id="breakdownList" class="small">
-                </ul>
+            <summary>Chi tiết 1: Phân tích Giờ làm việc</summary>
+            <ul id="breakdownList" class="small"></ul>
           </details>
-          <p class="small" style="margin-top: 10px;">Ghi chú: Giảm trừ cá nhân (11 tr) và Phụ thuộc (4.4 tr/người) đã được áp dụng.</p>
+
+          <details>
+            <summary>Chi tiết 2: Phân tích Bảo hiểm Xã hội (BHXH)</summary>
+            <div id="insuranceDetail" class="small"></div>
+          </details>
+
+          <details>
+            <summary>Chi tiết 3: Phân tích Thuế Thu nhập Cá nhân (TNCN)</summary>
+            <div id="taxDetail" class="small"></div>
+          </details>
+          
+          <p class="small" style="margin-top: 10px;">Ghi chú: Mức giảm trừ gia cảnh tính theo Ngày/Năm chi trả lương.</p>
         </div>
       </div>
     </div>

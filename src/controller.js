@@ -4,8 +4,17 @@ import { getInputNumber, el } from './utils.js';
 
 // Danh sách tất cả các ID input cần theo dõi
 const inputIds = [
-  'payMonth', 'baseSalary', 'allowanceSalary', 'monthlyAllowance', 'attendanceAllowanceBase',
-  'planLeaveSalary', 'socialSalary', 'workingDaysInMonth', 'numDependents',
+  'payMonth', 
+  'paymentYear', // Mới
+  'paymentDay',  // Mới
+  'salaryForNormalHours', // Mới
+  'salaryForOvertime',    // Mới
+  'allowanceSalary', 
+  'attendanceAllowanceBase',
+  'planLeaveSalary', 
+  'socialSalary', 
+  'workingDaysInMonth', 
+  'numDependents',
   // Giờ làm việc thực tế
   'day_norm_08_17', 'day_ot_17_20', 'day_ot_20_24',
   'night_norm_20_22', 'night_22_24', 'night_00_04', 'night_04_05', 'night_05_06', 'night_06_08',
@@ -21,20 +30,25 @@ function readModelFromInputs() {
   inputIds.forEach(id => {
     const input = el(id);
     if (input) {
-      // Đối với trường số: dùng getInputNumber (đảm bảo >= 0)
       if (input.type === 'number') {
         values[id] = getInputNumber(id);
       } 
-      // Đối với trường select (payMonth) hoặc các loại input khác
       else {
         values[id] = input.value;
       }
     }
   });
   
-  // Tạo mô hình
+  // Đảm bảo các trường cũ bị loại bỏ có giá trị mặc định là 0
+  values['monthlyAllowance'] = 0; 
+  
   const model = new SalaryModel(values);
-  model.payMonth = values.payMonth || ''; 
+  
+  // Lưu các giá trị thời gian thanh toán vào model
+  model.calculationMonth = parseInt(values.payMonth);
+  model.paymentYear = parseInt(values.paymentYear);
+  model.paymentDay = values.paymentDay;
+
   return model;
 }
 
@@ -44,7 +58,8 @@ function readModelFromInputs() {
 function recalc() {
   const model = readModelFromInputs();
   const comps = model.computeComponents();
-  comps.payMonth = model.payMonth || '';
+  // comps.payMonth sẽ là tháng tính lương (calculationMonth)
+  comps.payMonth = model.calculationMonth;
   renderTotals(comps);
 }
 
@@ -52,7 +67,6 @@ function recalc() {
  * Thiết lập Controller: Gắn sự kiện cho tất cả inputs
  */
 export function setupController() {
-  // 1. Gắn sự kiện 'input' (cho number/text) và 'change' (cho select) để tính toán trực tiếp
   inputIds.forEach(id => {
     const input = el(id);
     if (input) {
@@ -64,13 +78,11 @@ export function setupController() {
     }
   });
 
-  // 2. Gắn sự kiện cho nút "Tính lại"
   const recalcBtn = el('recalcBtn');
   if (recalcBtn) {
     recalcBtn.addEventListener('click', recalc);
   }
 
-  // 3. Gắn sự kiện cho nút "Reset"
   const resetBtn = el('resetBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
@@ -78,6 +90,5 @@ export function setupController() {
     });
   }
 
-  // Thực hiện tính toán ban đầu khi trang tải xong
   recalc();
 }
