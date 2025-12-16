@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>VNHR — Công Cụ Tính Lương (Chi tiết)</title>
+  <style>
+    /* Tinh chỉnh UX/UI theo phong cách Tập trung, Hiện đại & Khoa học */
+:root {
+  --primary: #007bff; /* Xanh dương chủ đạo */
+  --primary-light: #4c96ff;
+  --primary-dark: #004d99;
+  --secondary-bg: #e9ecef; /* Nền phụ nhẹ */
+  --success: #28a745; 
+  --danger: #dc3545; 
+  --text-main: #212529;
+  --text-light: #6c757d;
+  --bg-color: #f4f7f9; /* Nền tổng thể rất nhẹ */
+  --card-bg: #ffffff;
+  --border-color: #ced4da;
+  --radius: 6px; /* Bo góc mềm mại hơn */
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Bóng đổ nhẹ */
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  padding: 30px 20px;
+  max-width: 1300px; /* Rộng hơn để dễ tập trung */
+  margin: auto;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+/* HEADER */
+h1 { 
+    margin-bottom: 2px; 
+    color: var(--primary-dark); 
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+p.small {
+    margin-top: 0;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+}
+
+/* LAYOUT GRID */
+.grid { 
+    display: grid; 
+    grid-template-columns: 1.5fr 1fr; /* Input chiếm nhiều không gian hơn */
+    gap: 30px; 
+    align-items: start; 
+}
+
+/* CARD & SECTION STYLING */
+.card { 
+    border: 1px solid var(--border-color); 
+    padding: 25px; 
+    border-radius: var(--radius); 
+    background: var(--card-bg); 
+    box-shadow: var(--shadow); 
+}
+
+/* Fieldset (Cho nhóm khoa học hơn) */
+fieldset {
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+}
+legend {
+    padding: 0 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    border-bottom: none;
+    width: auto; /* Giúp legend chỉ bao quanh chữ */
+}
+
+h2 { 
+    margin-top: 0; 
+    color: var(--primary); 
+    padding-bottom: 5px; 
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+h3 { 
+    color: var(--text-main); 
+    font-size: 1rem; 
+    margin-top: 15px; 
+    margin-bottom: 10px; 
+    font-weight: 600;
+}
+
+/* INPUT STYLING */
+.input-row { 
+    display:flex; 
+    gap: 15px; /* Tăng khoảng cách */
+    margin-bottom: 15px; 
+    align-items:center; 
+}
+.input-row label { 
+    flex: 3; 
+    color: var(--text-main); 
+    font-weight: 500;
+}
+input[type=number], input[type=text], select { 
+    flex: 1.5; /* Input chiếm không gian cố định hơn */
+    padding: 10px 12px; 
+    border: 1px solid var(--border-color); 
+    border-radius: var(--radius); 
+    transition: all 0.3s;
+    background-color: var(--card-bg);
+    min-width: 150px; /* Ngăn input quá nhỏ */
+}
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+select { 
+    appearance: none; 
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%236c757d' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px 16px;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid var(--secondary-bg);
+    margin: 25px 0;
+}
+
+/* BUTTONS */
+.button-group {
+    margin-top: 25px;
+}
+button { 
+    padding: 12px 20px; 
+    margin-right: 10px;
+    cursor: pointer; 
+    border: none; 
+    border-radius: var(--radius); 
+    font-weight: 600;
+    transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+#recalcBtn { 
+    background-color: var(--primary); 
+    color: white; 
+}
+#recalcBtn:hover { 
+    background-color: var(--primary-dark); 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+#resetBtn {
+    background-color: var(--secondary-bg);
+    color: var(--text-light);
+}
+#resetBtn:hover {
+    background-color: #d8d8d8;
+    color: var(--text-main);
+}
+
+
+/* RESULT PANEL */
+.result-box { 
+    padding: 25px; 
+    border-radius: 10px; 
+    background: #e6f2ff; /* Màu xanh dịu nhẹ cho kết quả */
+    border: 1px solid var(--primary-light); 
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 30px; 
+}
+.result-box h2 {
+    color: var(--primary-dark);
+}
+.result-box p {
+    margin: 10px 0;
+    padding-bottom: 7px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* Đường gạch rõ ràng hơn */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+}
+.result-box p:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* KEY RESULTS - Typography nổi bật */
+#netSalary, #totalIncome {
+    font-family: monospace; /* Sử dụng font cố định cho kết quả tài chính */
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+#netSalary {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--success);
+    background: #d4edda; /* Nền nhẹ cho Net Salary */
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+#insuranceDeduction, #personalIncomeTax {
+    color: var(--danger); 
+    font-weight: 600;
+}
+
+
+/* DETAILS/SUMMARY */
+details { 
+    margin-top: 20px; 
+    border: 1px solid var(--border-color); 
+    border-radius: var(--radius); 
+    background: #f8f9fa; 
+    overflow: hidden;
+}
+summary { 
+    font-weight: 600; 
+    cursor: pointer; 
+    color: var(--primary-dark); 
+    padding: 12px 15px;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+details[open] summary {
+    background-color: var(--secondary-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+summary::after {
+    content: '▶';
+    font-size: 12px;
+    color: var(--primary);
+    transform: rotate(0deg);
+    transition: transform 0.2s;
+}
+details[open] summary::after {
+    content: '▼';
+    transform: rotate(0deg);
+}
+/* Nội dung chi tiết */
+details > div {
+    padding: 15px;
+}
+
+
+/* DETAIL TABLES */
+.detail-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    font-size: 13px; 
+    background: var(--card-bg);
+}
+.detail-table th, .detail-table td { 
+    border: 1px solid #eee; 
+    padding: 8px 10px; 
+}
+.detail-table th { 
+    background-color: #f1f3f5; 
+    color: var(--text-main);
+    font-weight: 600;
+    text-align: center;
+}
+.detail-table td:last-child {
+    text-align: right;
+    font-family: monospace;
+}
+.detail-table tfoot td {
+    font-weight: 700;
+    background-color: #fff8e1; /* Màu nhấn cho tổng */
+}
+
+/* RESPONSIVE */
+@media (max-width: 1050px) {
+    .grid { 
+        grid-template-columns: 1fr; 
+        gap: 20px;
+    }
+    .result-box {
+        position: static; 
+    }
+}
+@media (max-width: 600px) {
+    .input-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 5px;
+    }
+    .input-row label {
+        flex: unset;
+        font-weight: 600;
+    }
+    input[type=number], input[type=text], select {
+        flex: unset;
+        min-width: unset;
+    }
+}
+  </style>
+</head>
+<body>
+  <h1>VNHR — Công Cụ Tính Lương Chi Tiết</h1>
+  <p class="small">Công cụ tính lương và khấu trừ BHXH, TNCN. Kết quả cập nhật tự động khi thay đổi input.</p>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>A. Mức Lương & Chi tiết Thanh toán</h2>
+        
+        <div class="input-row">
+            <label for="periodYear">Năm phát sinh lương:</label>
+            <select id="periodYear">
+                <option value="2024">2024</option>
+                <option value="2025" selected>2025</option>
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+            </select>
+        </div>
+        <div class="input-row">
+            <label for="periodMonth">Tháng phát sinh lương (1-12):</label>
+            <select id="periodMonth">
+                <option value="1">Tháng 1</option><option value="2">Tháng 2</option><option value="3">Tháng 3</option>
+                <option value="4">Tháng 4</option><option value="5">Tháng 5</option><option value="6">Tháng 6</option>
+                <option value="7">Tháng 7</option><option value="8">Tháng 8</option><option value="9">Tháng 9</option>
+                <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12" selected>Tháng 12</option>
+            </select>
+        </div>
+        <hr/>
+        
+        <div class="input-row">
+            <label for="paymentYear">Năm chi trả tiền lương (Căn cứ tính thuế):</label>
+            <select id="paymentYear">
+                <option value="2024">2024</option>
+                <option value="2025" selected>2025</option>
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+            </select>
+        </div>
+        <div class="input-row">
+            <label for="paymentMonth">Tháng chi trả tiền lương (1-12):</label>
+            <select id="paymentMonth">
+                <option value="1">Tháng 1</option><option value="2">Tháng 2</option><option value="3">Tháng 3</option>
+                <option value="4">Tháng 4</option><option value="5">Tháng 5</option><option value="6">Tháng 6</option>
+                <option value="7">Tháng 7</option><option value="8">Tháng 8</option><option value="9">Tháng 9</option>
+                <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12" selected>Tháng 12</option>
+            </select>
+        </div>
+        <div class="input-row">
+            <label for="paymentDay">Ngày chi trả tiền lương (1-31):</label>
+            <input id="paymentDay" type="number" value="5" min="1" max="31">
+        </div>
+        <hr/>
+        
+        <div class="input-row"><label for="salaryForNormalHours">1. Lương căn cứ tính Tiền lương (Giờ thường) (VND/Tháng):</label><input id="salaryForNormalHours" type="number" value="10000000" min="0"></div>
+        <div class="input-row"><label for="salaryForOvertime">2. Lương căn cứ tính Tăng ca (VND/Tháng):</label><input id="salaryForOvertime" type="number" value="10000000" min="0"></div>
+
+        <div class="input-row"><label for="allowanceSalary">3. Lương căn cứ tính Phụ cấp (VND/Tháng):</label><input id="allowanceSalary" type="number" value="10000000" min="0"></div>
+        <div class="input-row"><label for="socialSalary">4. Mức lương đóng Bảo hiểm Xã hội (BHXH) (VND/Tháng):</label><input id="socialSalary" type="number" value="10000000" min="0"></div>
+        
+        <div class="input-row"><label for="attendanceAllowanceBase">5. Mức hưởng Phụ cấp Chuyên cần (VND/Tháng):</label><input id="attendanceAllowanceBase" type="number" value="500000" min="0"></div>
+        <div class="input-row"><label for="numDependents">6. Số người phụ thuộc (để giảm trừ TNCN):</label><input id="numDependents" type="number" value="0" min="0"></div>
+        
+        <hr style="margin-top: 15px;">
+
+        <h2>B. Giờ Làm Việc & Ngày Công (Chuẩn công: 26 ngày / 208 giờ Net)</h2>
+        
+        <div class="input-row"><label for="workingDaysInMonth">1. Tổng số ngày làm việc chuẩn trong tháng (Ngày):</label><input id="workingDaysInMonth" type="number" value="26" min="0"></div>
+        
+        <h3>2. Giờ làm việc thực tế (Thứ 2 - Thứ 7)</h3>
+        
+        <div class="input-row"><label for="day_norm_08_17">Giờ làm Hành chính ban ngày (08:00-17:00, Giờ có lương Net, Hệ số 1.0):</label><input id="day_norm_08_17" type="number" value="208" min="0"></div>
+        
+        <details>
+            <summary>Giờ Tăng ca ngày thường</summary>
+            <div class="input-row"><label for="day_ot_17_20">Giờ Tăng ca ngày (17:00-20:00, Hệ số 1.5):</label><input id="day_ot_17_20" type="number" value="0" min="0"></div>
+            <div class="input-row"><label for="day_ot_20_24">Giờ Tăng ca đêm (20:00-24:00, Hệ số 2.1):</label><input id="day_ot_20_24" type="number" value="0" min="0"></div>
+        </details>
+        
+        <details>
+            <summary>Giờ Làm Đêm Cơ bản & Tăng ca (20:00 - 08:00)</summary>
+            <p class="small">Lưu ý: Các trường này chỉ dành cho người làm ca đêm chuyên biệt. Giờ tăng ca 20:00-24:00 nên nhập ở mục trên.</p>
+            <div class="input-row"><label for="night_norm_20_22">Giờ làm đêm cơ bản (20:00-22:00, Hệ số 1.3):</label><input id="night_norm_20_22" type="number" value="0" min="0"></div>
+            <div class="input-row"><label for="night_22_24">Giờ làm đêm cơ bản (22:00-24:00, Hệ số 1.3):</label><input id="night_22_24" type="number" value="0" min="0"></div>
+            <div class="input-row"><label for="night_00_04">Giờ làm đêm cơ bản (00:00-04:00, Hệ số 1.3):</label><input id="night_00_04" type="number" value="0" min="0"></div>
+            <div class="input-row"><label for="night_04_05">Giờ làm đêm cơ bản (04:00-05:00, Hệ số 1.3):</label><input id="night_04_05" type="number" value="0" min="0"></div>
+            <div class="input-row"><label for="night_05_06">Giờ Tăng ca sáng sớm (05:00-06:00, Hệ số 2.1):</label><input id="night_05_06" type="number" value="0" min="0"></div>
+            <div class="input-row"><label for="night_06_08">Giờ Tăng ca sáng sớm (06:00-08:00, Hệ số 2.1):</label><input id="night_06_08" type="number" value="0" min="0"></div>
+        </details>
+
+        <h3>3. Giờ làm vào Ngày nghỉ/Lễ</h3>
+        <div class="input-row"><label for="sunday_day_hours">Giờ làm Chủ nhật ban ngày (08:00-22:00, Hệ số 2.0):</label><input id="sunday_day_hours" type="number" value="0" min="0"></div>
+        <div class="input-row"><label for="sunday_night_hours">Giờ làm Chủ nhật ban đêm (Hệ số 2.7):</label><input id="sunday_night_hours" type="number" value="0" min="0"></div>
+        <div class="input-row"><label for="holidayDays">Số ngày nghỉ Lễ/Tết có hưởng lương (Ngày):</label><input id="holidayDays" type="number" value="0" min="0"></div>
+        
+        <h3>4. Các loại Ngày nghỉ và Tăng ca khác</h3>
+        <div class="input-row"><label for="paidLeaveDays">Số ngày nghỉ phép có lương (Ngày):</label><input id="paidLeaveDays" type="number" value="0" min="0"></div>
+        <div class="input-row"><label for="companyPlanLeaveDays">Số ngày nghỉ kế hoạch công ty:</label><input id="companyPlanLeaveDays" type="number" value="0" min="0"></div>
+        <div class="input-row"><label for="extraOvertimeHours">Tổng giờ tăng ca phụ trội (Giờ):</label><input id="extraOvertimeHours" type="number" value="0" min="0"></div>
+        
+        <div style="display: none;">
+            <input id="planLeaveSalary" type="number" value="10000000">
+        </div>
+
+        <div style="margin-top:15px;">
+          <button id="recalcBtn">Tính lại</button>
+          <button id="resetBtn" type="button">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>Kết quả & phân tích</h2>
+        <div class="result-box">
+          <p><strong>Tháng tính lương:</strong> <span id="displayPayMonth">-</span></p>
+          <p><strong>Tổng tiền lương từ giờ làm (gross):</strong> <span id="totalHourSalary">-</span></p>
+          <p><strong>Tổng thu nhập (gồm phụ cấp):</strong> <span id="totalIncome">-</span></p>
+          <p><strong>Phụ cấp Chuyên cần (đầu vào):</strong> <span id="monthlyAllowanceAmountResult">-</span></p>
+          <p><strong>Khấu trừ BHXH (NV đóng):</strong> <strong id="insuranceDeduction">-</strong></p>
+          <p><strong>Thuế TNCN cần nộp:</strong> <strong id="personalIncomeTax">-</strong></p>
+          <p><strong>Lương thực nhận:</strong> <strong id="netSalary">-</strong></p>
+
+          <details>
+            <summary>Chi tiết 1: Phân tích Giờ làm việc</summary>
+            <ul id="breakdownList" class="small"></ul>
+          </details>
+
+          <details>
+            <summary>Chi tiết 2: Phân tích Bảo hiểm Xã hội (BHXH)</summary>
+            <div id="insuranceDetail" class="small"></div>
+          </details>
+
+          <details>
+            <summary>Chi tiết 3: Phân tích Thuế Thu nhập Cá nhân (TNCN)</summary>
+            <div id="taxDetail" class="small"></div>
+          </details>
+          
+          <p class="small" style="margin-top: 10px;">Ghi chú: Mức giảm trừ gia cảnh tính theo Ngày/Năm chi trả lương.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
